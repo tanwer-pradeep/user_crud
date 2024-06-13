@@ -74,9 +74,81 @@ const deleteCurrentUser = async (req, res) => {
   return res.status(StatusCodes.OK).send({ msg: "User deleted successfully." });
 };
 
+
+// SSR
+const renderUserSS = async (req, res) => {
+  const { page, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+  const finalResp = await User.find({}).skip(skip).limit(limit);
+  
+
+  let renderedPage = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>User List</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        th {
+          background-color: #f2f2f2;
+          text-align: left;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>User List</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  // Loop through the users array to generate table rows
+  finalResp.forEach((user, index) => {
+    renderedPage += `
+      <tr>
+        <td>${index+1}</td>
+        <td>${user.id}</td>
+        <td>${user.first_name} ${user.last_name}</td>
+        <td>${user.gender}</td>
+        <td>${user.email}</td>
+      </tr>
+    `;
+  });
+
+  // Close the HTML tags
+  renderedPage += `
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+  res.status(StatusCodes.OK).send(renderedPage);
+};
+
 // exports
 module.exports.getUsers = getUsers;
 module.exports.createNewUser = createNewUser;
 module.exports.getUserByID = getUserByID;
 module.exports.updateCurrentUser = updateCurrentUser;
 module.exports.deleteCurrentUser = deleteCurrentUser;
+module.exports.renderUserSS = renderUserSS
