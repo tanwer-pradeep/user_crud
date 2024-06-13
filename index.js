@@ -25,6 +25,7 @@ app.route("/api/users/:id")
 
 // web routes
 app.route("/users").get(renderUserSS);
+app.route("/").get(getUsers)
 
 // Connection
 const PORT = process.env.PORT || 5000;

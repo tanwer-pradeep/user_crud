@@ -10,7 +10,7 @@ const User = mongoose.model("users", UserSchema);
 
 // get all users JSON
 const getUsers = async (req, res) => {
-  const { page, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.query;
   const skip = (page - 1) * limit;
   const finalResp = await User.find({}).skip(skip).limit(limit);
   const totalUsers = await User.countDocuments();
@@ -77,7 +77,7 @@ const deleteCurrentUser = async (req, res) => {
 
 // SSR
 const renderUserSS = async (req, res) => {
-  const { page, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.query;
   const skip = (page - 1) * limit;
   const finalResp = await User.find({}).skip(skip).limit(limit);
   
@@ -128,7 +128,7 @@ const renderUserSS = async (req, res) => {
       <tr>
         <td>${index+1}</td>
         <td>${user.id}</td>
-        <td>${user.first_name} ${user.last_name}</td>
+        <td>${user.firstName} ${user.lastName}</td>
         <td>${user.gender}</td>
         <td>${user.email}</td>
       </tr>
